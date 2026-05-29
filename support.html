@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kogan | Concierge Support</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root, [data-theme="dark"] {
+  --bg: #030305;
+  --panel: #07070c;
+  --panel-glass: rgba(7, 7, 12, 0.75);
+  --text: #fdfdfd;
+  --text-muted: #8e8e93;
+  --border: rgba(212, 163, 89, 0.1);
+  --border-focus: rgba(212, 163, 89, 0.3);
+  --gold: #d4a359;
+  --gold-glow: rgba(212, 163, 89, 0.15);
+  --gold-gradient: linear-gradient(135deg, #f3e7c4 0%, #d4a359 50%, #a77c37 100%);
+  --chat-user: linear-gradient(135deg, #1e1b18 0%, #2a241b 100%);
+  --chat-admin: rgba(255, 255, 255, 0.03);
+  --input-bg: #0d0d12;
+}
+
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-glass: rgba(255, 255, 255, 0.85);
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --border-focus: #d4a359;
+  --gold: #b4833b;
+  --gold-glow: rgba(212, 163, 89, 0.08);
+  --gold-gradient: linear-gradient(135deg, #a77c37 0%, #d4a359 50%, #f3e7c4 100%);
+  --chat-user: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  --chat-admin: rgba(15, 23, 42, 0.03);
+  --input-bg: #f1f5f9;
+}
+
+* {
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100vh;
+  background: var(--bg);
+}
+
+/* Master Header Engine */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  position: relative;
+  z-index: 1000;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    padding: 16px 24px;
+  }
+}
+
+.nav-left-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  font-weight: 700;
+  letter-spacing: 4px;
+  font-size: 16px;
+  background: linear-gradient(135deg, var(--text) 40%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .logo {
+    letter-spacing: 6px;
+    font-size: 18px;
+  }
+}
+
+/* Header Dynamic Redirect Containers */
+.header-links-container {
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .header-links-container {
+    display: flex;
+  }
+}
+
+.header-redirect-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header-redirect-box.tg-box:hover {
+  border-color: #0088cc;
+  background: rgba(0, 136, 204, 0.08);
+}
+
+.header-redirect-box.email-box:hover {
+  border-color: #ea4335;
+  background: rgba(234, 67, 53, 0.08);
+}
+
+.header-redirect-box .icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tg-box .icon-wrap { background: rgba(0, 136, 204, 0.15); color: #29b6f6; }
+.email-box .icon-wrap { background: rgba(234, 67, 53, 0.15); color: #ef5350; }
+
+.redirect-text-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.redirect-text-meta .box-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+
+.redirect-text-meta .box-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .nav-controls {
+    gap: 12px;
+  }
+}
+
+.lang-selector {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  max-width: 95px;
+}
+
+@media (min-width: 768px) {
+  .lang-selector {
+    padding: 8px 12px;
+    font-size: 13px;
+    max-width: 140px;
+  }
+}
+
+.control-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+  .control-btn {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+.control-btn:hover {
+  border-color: var(--gold);
+  background: var(--gold-glow);
+}
+
+/* Sidebar Drawer Overlay Navigation Module */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -340px;
+  width: 280px;
+  height: 100%;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  padding: 40px 30px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2000;
+}
+
+.sidebar.active {
+  transform: translateX(-340px);
+}
+
+body[dir="rtl"] .sidebar {
+  right: auto;
+  left: -340px;
+  border-left: none;
+  border-right: 1px solid var(--border);
+}
+
+body[dir="rtl"] .sidebar.active {
+  transform: translateX(340px);
+}
+
+.sidebar .close-drawer {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  padding: 0;
+}
+
+.sidebar a {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  margin: 20px 0;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.sidebar a:hover {
+  color: var(--gold);
+}
+
+/* Secure Identification Screen Overlay */
+.identity-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 3, 5, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.identity-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+@media (min-width: 768px) {
+  .identity-card {
+    padding: 32px;
+  }
+}
+
+.identity-card h2 {
+  font-size: 20px;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.identity-card p {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+/* Master Flexible Workspace Framework */
+.master-viewport {
+  width: 100%;
+  height: calc(100vh - 63px);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .master-viewport {
+    height: calc(100vh - 71px);
+    padding: 20px;
+    gap: 20px;
+  }
+}
+
+/* Mobile Quick Access Row Layout */
+.mobile-quick-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .mobile-quick-links {
+    display: none;
+  }
+}
+
+.mobile-quick-links .header-redirect-box {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+.chat-container {
+  flex: 1;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+.chat-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  .chat-header {
+    padding: 18px 24px;
+  }
+}
+
+.identity-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-dot-frame {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #10b981;
+}
+
+.active-user-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.concierge-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.chat-stream-area {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+  min-height: 0;
+}
+
+@media (min-width: 768px) {
+  .chat-stream-area {
+    padding: 24px;
+  }
+}
+
+.chat-stream-area::-webkit-scrollbar { width: 5px; }
+.chat-stream-area::-webkit-scrollbar-track { background: transparent; }
+.chat-stream-area::-webkit-scrollbar-thumb { background: rgba(212, 163, 89, 0.15); border-radius: 10px; }
+
+.bubble-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 85%;
+}
+
+@media (min-width: 768px) {
+  .bubble-row {
+    max-width: 75%;
+  }
+}
+
+.bubble-row.user-node {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.bubble-row.admin-node {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.msg-bubble {
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 12px;
+  font-weight: 400;
+  word-break: break-word;
+}
+
+@media (min-width: 768px) {
+  .msg-bubble {
+    padding: 12px 18px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+.user-node .msg-bubble {
+  background: var(--chat-user);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-right-radius: 2px;
+}
+
+.admin-node .msg-bubble {
+  background: var(--chat-admin);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 2px;
+}
+
+.msg-timestamp {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+
+.chat-input-dock {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: rgba(4, 4, 6, 0.1);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .chat-input-dock {
+    padding: 18px 24px;
+    gap: 12px;
+  }
+}
+
+.input-field-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.field {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .field {
+    padding: 14px 16px;
+  }
+}
+
+.field:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px var(--gold-glow);
+}
+
+.btn-action {
+  padding: 0 16px;
+  height: 41px;
+  background: var(--text);
+  color: var(--panel);
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .btn-action {
+    padding: 0 24px;
+    height: 45px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+}
+
+.btn-action:hover {
+  background-color: var(--gold);
+  color: #ffffff;
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.typing-beacon {
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.typing-dots span {
+  width: 4px;
+  height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="identity-overlay" id="identityOverlay" style="display: none;">
+  <div class="identity-card">
+    <h2>Secure Identification</h2>
+    <p>Please supply your routing coordinates to establish an active synchronization pipeline with the live response matrix.</p>
+    <input class="field" id="setupName" placeholder="Full Name" style="margin-bottom: 12px;">
+    <input class="field" id="setupEmail" placeholder="Email Address" style="margin-bottom: 20px;">
+    <button class="btn-action" style="width: 100%;" onclick="initializeIdentity()">Establish Connection</button>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-left-group">
+    <a href="index.html" class="logo">KOGAN</a>
+    
+    <div class="header-links-container">
+      <a href="#" id="tgLinkDesktop" target="_blank" class="header-redirect-box tg-box">
+        <div class="icon-wrap">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.258.294.273.006.578-.106.915-.335 2.3-1.554 3.473-2.337 3.518-2.251.045.086-.07.194-.183.298l-.044.041c-.1.096-.694.654-1.046 1.006l-.167.168c-.308.309-.374.53-.028.758l.173.113c.691.451 1.233.805 1.77 1.157l.154.1c.516.34 1.012.666 1.587.612.334-.032.68-.344.854-1.277l.512-2.723c.117-.63.266-1.433.003-1.884-.176-.3-.51-.318-.68-.313-.105.003-.531.063-2.128.724z"/>
+          </svg>
+        </div>
+        <div class="redirect-text-meta">
+          <span class="box-label">Telegram</span>
+          <span class="box-sub">Contact Us On Telegram</span>
+        </div>
+      </a>
+      
+      <a href="#" id="emailLinkDesktop" target="_blank" class="header-redirect-box email-box">
+        <div class="icon-wrap">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+          </svg>
+        </div>
+        <div class="redirect-text-meta">
+          <span class="box-label">Email</span>
+          <span class="box-sub">Contact Us On Email</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="nav-controls">
+    <select class="lang-selector" id="langSelect" aria-label="Language Selector">
+      <option value="en">English</option>
+      <option value="ar">العربية</option>
+      <option value="es">Español</option>
+    </select>
+    
+    <button class="control-btn" id="themeToggle" onclick="toggleThemeConfig()" aria-label="Toggle Theme">
+      <svg id="themeIcon" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+      </svg>
+    </button>
+
+    <button class="control-btn" onclick="toggleMenu()" aria-label="Open Sidebar Menu">☰</button>
+  </div>
+</div>
+
+<div class="sidebar" id="sidebar">
+  <button class="close-drawer" onclick="toggleMenu()">✕</button>
+  <a href="index.html">Home Page</a>
+  <a href="products-list.html">All Products</a>
+  <a href="terms.html">Terms & Conditions</a>
+  <a href="auth.html">Become A Seller And Earn</a>
+</div>
+
+<div class="master-viewport">
+
+  <div class="mobile-quick-links">
+    <a href="#" id="tgLinkMobile" target="_blank" class="header-redirect-box tg-box">
+      <div class="icon-wrap">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.258.294.273.006.578-.106.915-.335 2.3-1.554 3.473-2.337 3.518-2.251.045.086-.07.194-.183.298l-.044.041c-.1.096-.694.654-1.046 1.006l-.167.168c-.308.309-.374.53-.028.758l.173.113c.691.451 1.233.805 1.77 1.157l.154.1c.516.34 1.012.666 1.587.612.334-.032.68-.344.854-1.277l.512-2.723c.117-.63.266-1.433.003-1.884-.176-.3-.51-.318-.68-.313-.105.003-.531.063-2.128.724z"/>
+        </svg>
+      </div>
+      <div class="redirect-text-meta">
+        <span class="box-label">Telegram</span>
+        <span class="box-sub">Contact Us</span>
+      </div>
+    </a>
+    
+    <a href="#" id="emailLinkMobile" target="_blank" class="header-redirect-box email-box">
+      <div class="icon-wrap">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+        </svg>
+      </div>
+      <div class="redirect-text-meta">
+        <span class="box-label">Email</span>
+        <span class="box-sub">Contact Us</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="identity-cluster">
+        <div class="status-dot-frame"></div>
+        <div>
+          <div class="active-user-title" id="displayedUserName">Synchronizing...</div>
+          <div class="concierge-sub">Operational Helpdesk System Support</div>
+        </div>
+      </div>
+      <div class="typing-beacon" id="typingBeacon">
+        <span>Admin is writing</span>
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <div class="chat-stream-area" id="chatStream"></div>
+
+    <div class="chat-input-dock">
+      <div class="input-field-wrapper">
+        <input class="field" id="msgInput" placeholder="Write operational transmission requests..." onkeydown="if(event.key === 'Enter') sendPayloadMessage()">
+      </div>
+      <button class="btn-action" id="sendBtn" onclick="sendPayloadMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBfNKnkuPjWCO-KnqvZrfmrbfC44K0xOY8",
+  authDomain: "koganstoree.firebaseapp.com",
+  databaseURL: "https://koganstoree-default-rtdb.firebaseio.com",
+  projectId: "koganstoree",
+  storageBucket: "koganstoree.firebasestorage.app",
+  messagingSenderId: "166010280262",
+  appId: "1:166010280262:web:a29c6fc7b8251c9997ed47"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let currentUser = JSON.parse(localStorage.getItem("kogan_support_uid"));
+
+window.toggleMenu = function(){
+  document.getElementById("sidebar").classList.toggle("active");
+}
+
+/* Light/Dark Interface Management System Engine */
+window.toggleThemeConfig = function() {
+  const rootElement = document.documentElement;
+  const targetIcon = document.getElementById("themeIcon");
+  
+  if (rootElement.getAttribute("data-theme") === "dark") {
+    rootElement.setAttribute("data-theme", "light");
+    targetIcon.innerHTML = `<path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0-9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 8 1zM8 13a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm8-5a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1 0-1h1a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1 0-1h1a.5.5 0 0 1 .5.5zm10.657-5.657a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zM4.464 11.536a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zm1.414-8.464a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm8.464 8.464a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707z"/>`;
+  } else {
+    rootElement.setAttribute("data-theme", "dark");
+    targetIcon.innerHTML = `<path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>`;
+  }
+}
+
+function checkUserVerificationState() {
+  if(!currentUser) {
+    document.getElementById("identityOverlay").style.display = "flex";
+  } else {
+    document.getElementById("identityOverlay").style.display = "none";
+    establishLiveDatabaseSubscription();
+  }
+}
+
+window.initializeIdentity = function() {
+  const nameVal = document.getElementById("setupName").value.trim();
+  const emailVal = document.getElementById("setupEmail").value.trim();
+  
+  if(!nameVal || !emailVal) {
+    alert("Identification metrics invalid. Please fulfill credentials accurately.");
+    return;
+  }
+  
+  const structuredId = emailVal.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
+  
+  currentUser = {
+    uid: structuredId,
+    name: nameVal,
+    email: emailVal
+  };
+  
+  localStorage.setItem("kogan_support_uid", JSON.stringify(currentUser));
+  document.getElementById("identityOverlay").style.display = "none";
+  establishLiveDatabaseSubscription();
+}
+
+function establishLiveDatabaseSubscription() {
+  document.getElementById("displayedUserName").innerText = currentUser.name;
+  
+  /* REALTIME ADMIN EDITABLE HYDRATION ROUTING PIPELINES */
+  onValue(ref(db, "links/telegram"), (snapshot) => {
+    const link = snapshot.val() || "#";
+    document.getElementById("tgLinkDesktop").href = link;
+    document.getElementById("tgLinkMobile").href = link;
+  });
+
+  onValue(ref(db, "links/email"), (snapshot) => {
+    const rawMail = snapshot.val() || "";
+    const computedMailHref = rawMail.toLowerCase().startsWith("mailto:") ? rawMail : `mailto:${rawMail}`;
+    document.getElementById("emailLinkDesktop").href = computedMailHref;
+    document.getElementById("emailLinkMobile").href = computedMailHref;
+  });
+
+  const chatMetaRef = ref(db, `support_chats/${currentUser.uid}`);
+  const messagesQueryRef = ref(db, `support_chats/${currentUser.uid}/messages`);
+  
+  onValue(chatMetaRef, (snapshot) => {
+    const data = snapshot.val();
+    if(!data) {
+      update(ref(db, `support_chats/${currentUser.uid}`), {
+        name: currentUser.name,
+        email: currentUser.email,
+        lastMessage: "Channel opened.",
+        lastUpdated: Date.now()
+      });
+    }
+  }, { onlyOnce: true });
+
+  onValue(ref(db, `support_chats/${currentUser.uid}/typingState`), (snapshot) => {
+    if(snapshot.val() === "admin") {
+      document.getElementById("typingBeacon").style.display = "flex";
+    } else {
+      document.getElementById("typingBeacon").style.display = "none";
+    }
+  });
+
+  onValue(messagesQueryRef, (snapshot) => {
+    const streamContainer = document.getElementById("chatStream");
+    streamContainer.innerHTML = "";
+    
+    const packetData = snapshot.val();
+    if(packetData) {
+      Object.keys(packetData).forEach(msgKey => {
+        const item = packetData[msgKey];
+        const isUser = item.sender === "user";
+        
+        const rowNode = document.createElement("div");
+        rowNode.className = `bubble-row ${isUser ? 'user-node' : 'admin-node'}`;
+        
+        const timestampFormatted = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        rowNode.innerHTML = `
+          <div class="msg-bubble">${escapeHtml(item.text)}</div>
+          <div class="msg-timestamp">${timestampFormatted}</div>
+        `;
+        streamContainer.appendChild(rowNode);
+      });
+      
+      streamContainer.scrollTop = streamContainer.scrollHeight;
+    } else {
+      streamContainer.innerHTML = `
+        <div style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 40px; font-weight: 300; padding: 0 10px;">
+          System secure corridor linked. Outline your design adjustments or operational complaints above to communicate.
+        </div>
+      `;
+    }
+  });
+}
+
+window.sendPayloadMessage = async function() {
+  const inputEl = document.getElementById("msgInput");
+  const sendBtnEl = document.getElementById("sendBtn");
+  const payloadText = inputEl.value.trim();
+  
+  if(!payloadText) return;
+  
+  inputEl.disabled = true;
+  sendBtnEl.disabled = true;
+  sendBtnEl.innerText = "...";
+  
+  try {
+    const targetMsgCollectionRef = ref(db, `support_chats/${currentUser.uid}/messages`);
+    const trackingRootRef = ref(db, `support_chats/${currentUser.uid}`);
+    
+    const messagePayload = {
+      sender: "user",
+      text: payloadText,
+      timestamp: Date.now()
+    };
+    
+    await push(targetMsgCollectionRef, messagePayload);
+    await update(trackingRootRef, {
+      lastMessage: payloadText,
+      lastUpdated: Date.now(),
+      typingState: "none"
+    });
+    
+    inputEl.value = "";
+  } catch(ex) {
+    console.error("Transmission fault:", ex);
+    alert("Connection sync issue encountered during layout execution.");
+  } finally {
+    inputEl.disabled = false;
+    sendBtnEl.disabled = false;
+    sendBtnEl.innerText = "Send";
+    inputEl.focus();
+  }
+}
+
+function escapeHtml(stringSource) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return String(stringSource).replace(/[&<>"']/g, (m) => map[m]);
+}
+
+checkUserVerificationState();
+</script>
+
+</body>
+</html>
